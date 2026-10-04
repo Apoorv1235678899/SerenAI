@@ -11,9 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     // ------------------------------------------
     // 🚀 THE FIX FOR .js IMPORTS
