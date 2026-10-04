@@ -30,8 +30,12 @@ export default function SignupPage() {
     try {
       await registerUser(name, email, password);
       router.push("/login");
-    } catch (err: any) {
-      setError(err.message || "Signup failed. Please try again.");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Signup failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }

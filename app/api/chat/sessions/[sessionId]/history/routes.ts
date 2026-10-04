@@ -30,11 +30,15 @@ export async function GET(
       );
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      role: "user" | "assistant";
+      content: string;
+      timestamp: string;
+    }[];
     console.log("Chat history retrieved successfully:", data);
 
     // Format the response to match the frontend's expected format
-    const formattedMessages = data.map((msg: any) => ({
+    const formattedMessages = data.map((msg) => ({
       role: msg.role,
       content: msg.content,
       timestamp: msg.timestamp,

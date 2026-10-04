@@ -1,5 +1,15 @@
 // Static data for the dashboard
-const staticChatHistory = [
+interface StaticChatMessage {
+  id: string;
+  userId: string;
+  message: string;
+  role: "user" | "assistant";
+  timestamp: Date;
+  sentiment: string;
+  context: unknown;
+}
+
+const staticChatHistory: StaticChatMessage[] = [
   {
     id: "1",
     userId: "user1",
@@ -90,7 +100,7 @@ export const saveChatMessage = async (data: {
   userId: string;
   message: string;
   role: "user" | "assistant";
-  context?: any;
+  context?: unknown;
 }) => {
   const newMessage = {
     id: Math.random().toString(36).substr(2, 9),

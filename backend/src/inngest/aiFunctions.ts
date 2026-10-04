@@ -3,18 +3,16 @@ import { GoogleGenAI, type GenerateContentResponse } from "@google/genai";
 import { logger } from "../utils/logger.ts";
 
 // ✅ Initialize Gemini
-const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "AIzaSyBCBz3wQu9Jjd_icCDZf-17CUO_O8IynwI",
-});
+const getGeminiClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
-// ✅ Helper to safely extract text
-async function getTextFromResponse(result: GenerateContentResponse): Promise<string> {
-  const r = result as any;
-  const text =
-    (await r.response?.text?.()) ||
-    r.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-    "";
-  return text.trim();
+function getTextFromResponse(result: GenerateContentResponse): string {
+  return (result.text ?? "").trim();
 }
 
 
@@ -65,7 +63,7 @@ export const processChatMessage = inngest.createFunction(
               "progressIndicators": ["string"]
             }`;
 
-          const result: GenerateContentResponse = await genAI.models.generateContent({
+          const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
             model: "gemini-2.0-flash",
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           });
@@ -132,7 +130,7 @@ export const processChatMessage = inngest.createFunction(
             5. Considers safety and well-being
           `;
 
-          const result: GenerateContentResponse = await genAI.models.generateContent({
+          const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
             model: "gemini-2.0-flash",
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           });
@@ -182,7 +180,7 @@ export const analyzeTherapySession = inngest.createFunction(
         return event.data.notes || event.data.transcript;
       });
 
-      const result: GenerateContentResponse = await genAI.models.generateContent({
+      const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
         model: "gemini-2.0-flash",
         contents: [
           {
@@ -248,7 +246,7 @@ export const generateActivityRecommendations = inngest.createFunction(
         };
       });
 
-      const result: GenerateContentResponse = await genAI.models.generateContent({
+      const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
         model: "gemini-2.0-flash",
         contents: [
           {

@@ -147,7 +147,7 @@ export default function Home() {
           {/* Enhanced description with better readability */}
           <p className="max-w-[600px] mx-auto text-base md:text-lg text-muted-foreground leading-relaxed tracking-wide">
             Experience a new way of emotional support. Our AI companion is here
-            to listen, understand, and guide you through life's journey.
+            to listen, understand, and guide you through life&apos;s journey.
           </p>
 
           {/* Emotion slider section with enhanced transitions */}
@@ -159,7 +159,7 @@ export default function Home() {
           >
             <div className="space-y-2 text-center">
               <p className="text-sm text-muted-foreground/80 font-medium">
-                Whatever you're feeling, we're here to listen
+                Whatever you&apos;re feeling, we&apos;re here to listen
               </p>
               <div className="flex justify-between items-center px-2">
                 {emotions.map((em) => (
@@ -200,7 +200,7 @@ export default function Home() {
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground animate-pulse">
-                Slide to express how you're feeling today
+                Slide to express how you&apos;re feeling today
               </p>
             </div>
           </motion.div>
@@ -344,7 +344,7 @@ export default function Home() {
               <span className="flex items-center gap-2">
                 {currentStep === welcomeSteps.length - 1 ? (
                   <>
-                    Let's Begin
+                    Let&apos;s Begin
                     <Sparkles className="w-4 h-4 animate-pulse" />
                   </>
                 ) : (

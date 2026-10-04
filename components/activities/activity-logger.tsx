@@ -12,14 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "@/lib/contexts/session-context";
 import { logActivity } from "@/lib/api/activity";
@@ -116,24 +108,32 @@ export function ActivityLogger({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Activity Type</Label>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select activity type" />
-              </SelectTrigger>
-              <SelectContent>
-                {activityTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label htmlFor="activity-type" className="text-sm font-medium">
+              Activity Type
+            </label>
+            <select
+              id="activity-type"
+              value={type}
+              onChange={(event) => setType(event.target.value)}
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            >
+              <option value="" disabled>
+                Select activity type
+              </option>
+              {activityTypes.map((activityType) => (
+                <option key={activityType.id} value={activityType.id}>
+                  {activityType.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
-            <Label>Name</Label>
+            <label htmlFor="activity-name" className="text-sm font-medium">
+              Name
+            </label>
             <Input
+              id="activity-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Morning Meditation, Evening Walk, etc."
@@ -141,8 +141,11 @@ export function ActivityLogger({
           </div>
 
           <div className="space-y-2">
-            <Label>Duration (minutes)</Label>
+            <label htmlFor="activity-duration" className="text-sm font-medium">
+              Duration (minutes)
+            </label>
             <Input
+              id="activity-duration"
               type="number"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
@@ -151,8 +154,11 @@ export function ActivityLogger({
           </div>
 
           <div className="space-y-2">
-            <Label>Description (optional)</Label>
+            <label htmlFor="activity-description" className="text-sm font-medium">
+              Description (optional)
+            </label>
             <Input
+              id="activity-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="How did it go?"

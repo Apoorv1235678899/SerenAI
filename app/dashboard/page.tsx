@@ -19,6 +19,7 @@ import {
   ArrowRight,
   X,
   Loader2,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Card,
@@ -100,6 +101,13 @@ interface DailyStats {
   lastUpdated: Date;
 }
 
+interface Insight {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  priority: "low" | "medium" | "high";
+}
+
 // Update the calculateDailyStats function to show correct stats
 const calculateDailyStats = (activities: Activity[]): DailyStats => {
   const today = startOfDay(new Date());
@@ -136,12 +144,7 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
 
 // Rename the function
 const generateInsights = (activities: Activity[]) => {
-  const insights: {
-    title: string;
-    description: string;
-    icon: any;
-    priority: "low" | "medium" | "high";
-  }[] = [];
+  const insights: Insight[] = [];
 
   // Get activities from last 7 days
   const lastWeek = subDays(new Date(), 7);
@@ -270,14 +273,7 @@ export default function Dashboard() {
   const { user } = useSession();
 
   // Rename the state variable
-  const [insights, setInsights] = useState<
-    {
-      title: string;
-      description: string;
-      icon: any;
-      priority: "low" | "medium" | "high";
-    }[]
-  >([]);
+  const [insights, setInsights] = useState<Insight[]>([]);
 
   // New states for activities and wearables
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -634,7 +630,7 @@ export default function Dashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Today's Overview</CardTitle>
+                    <CardTitle>Today&apos;s Overview</CardTitle>
                     <CardDescription>
                       Your wellness metrics for{" "}
                       {format(new Date(), "MMMM d, yyyy")}

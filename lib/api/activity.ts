@@ -7,7 +7,7 @@ interface ActivityEntry {
 
 export async function logActivity(
   data: ActivityEntry
-): Promise<{ success: boolean; data: any }> {
+): Promise<{ success: boolean; data: unknown }> {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Not authenticated");
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Mood } from "../models/Mood.ts";
 import { logger } from "../utils/logger.ts";
-import { sendMoodUpdateEvent } from "../utils/inngestEvents";
+import { sendMoodUpdateEvent } from "../utils/inngestEvents.ts";
 
 // Create a new mood entry
 export const createMood = async (

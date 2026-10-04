@@ -5,7 +5,7 @@ export interface ChatMessage {
   metadata?: {
     technique: string;
     goal: string;
-    progress: any[];
+    progress: unknown[];
     analysis?: {
       emotionalState: string;
       themes: string[];
@@ -23,6 +23,15 @@ export interface ChatSession {
   updatedAt: Date;
 }
 
+interface ChatSessionPayload {
+  sessionId: string;
+  messages?: Array<
+    Omit<ChatMessage, "timestamp"> & { timestamp?: string | Date }
+  >;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+}
+
 export interface ApiResponse {
   message: string;
   response?: string;
@@ -36,7 +45,7 @@ export interface ApiResponse {
   metadata?: {
     technique: string;
     goal: string;
-    progress: any[];
+    progress: unknown[];
   };
 }
 
@@ -123,7 +132,9 @@ export const getChatHistory = async (
       throw new Error(error.error || "Failed to fetch chat history");
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as Array<
+      Omit<ChatMessage, "timestamp"> & { timestamp: string | Date }
+    >;
     console.log("Received chat history:", data);
 
     if (!Array.isArray(data)) {
@@ -132,7 +143,7 @@ export const getChatHistory = async (
     }
 
     // Ensure each message has the correct format
-    return data.map((msg: any) => ({
+    return data.map((msg) => ({
       role: msg.role,
       content: msg.content,
       timestamp: new Date(msg.timestamp),
@@ -157,10 +168,10 @@ export const getAllChatSessions = async (): Promise<ChatSession[]> => {
       throw new Error(error.error || "Failed to fetch chat sessions");
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as ChatSessionPayload[];
     console.log("Received chat sessions:", data);
 
-    return data.map((session: any) => {
+    return data.map((session) => {
       // Ensure dates are valid
       const createdAt = new Date(session.createdAt || Date.now());
       const updatedAt = new Date(session.updatedAt || Date.now());
@@ -169,7 +180,7 @@ export const getAllChatSessions = async (): Promise<ChatSession[]> => {
         ...session,
         createdAt: isNaN(createdAt.getTime()) ? new Date() : createdAt,
         updatedAt: isNaN(updatedAt.getTime()) ? new Date() : updatedAt,
-        messages: (session.messages || []).map((msg: any) => ({
+        messages: (session.messages || []).map((msg) => ({
           ...msg,
           timestamp: new Date(msg.timestamp || Date.now()),
         })),

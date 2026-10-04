@@ -18,7 +18,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import {
   Card,
@@ -63,7 +63,7 @@ interface ApiResponse {
   metadata: {
     technique: string;
     goal: string;
-    progress: any[];
+    progress: unknown[];
   };
 }
 
@@ -74,7 +74,7 @@ const SUGGESTED_QUESTIONS = [
   { text: "I need help with work-life balance" },
 ];
 
-const glowAnimation = {
+const glowAnimation: Variants = {
   initial: { opacity: 0.5, scale: 1 },
   animate: {
     opacity: [0.5, 1, 0.5],
