@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "nodenext",
+    "lib": ["es2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // ------------------------------------------
+    // 🚀 THE FIX FOR .js IMPORTS
+    // ------------------------------------------
+    "allowImportingTsExtensions": true,
+    "noEmit": true // Recommended if you are using ts-node or a bundler
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
