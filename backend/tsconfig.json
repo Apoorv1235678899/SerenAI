@@ -14,11 +14,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    // ------------------------------------------
-    // 🚀 THE FIX FOR .js IMPORTS
-    // ------------------------------------------
+    
     "allowImportingTsExtensions": true,
-    "noEmit": true // Recommended if you are using ts-node or a bundler
+    "noEmit": true 
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

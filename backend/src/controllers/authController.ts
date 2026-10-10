@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
-import { Session } from "../models/Session.js";
+import { Session } from "../models/Session.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -8,7 +8,7 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-      return res
+      return res 
         .status(400)
         .json({ message: "Name, email, and password are required." });
     }
