@@ -49,24 +49,13 @@ export interface ApiResponse {
   };
 }
 
-const API_BASE =
-  process.env.BACKEND_API_URL ||
-  "http://localhost:3001";
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    Authorization: token ? `Bearer ${token}` : "",
-  };
-};
+const apiBase = "/api/chat/sessions";
 
 export const createChatSession = async (): Promise<string> => {
   try {
-    console.log("Creating new chat session...");
-    const response = await fetch(`${API_BASE}/chat/sessions`, {
+    const response = await fetch(apiBase, {
       method: "POST",
-      headers: getAuthHeaders(),
+      credentials: "same-origin",
     });
 
     if (!response.ok) {
@@ -76,7 +65,6 @@ export const createChatSession = async (): Promise<string> => {
     }
 
     const data = await response.json();
-    console.log("Chat session created:", data);
     return data.sessionId;
   } catch (error) {
     console.error("Error creating chat session:", error);
@@ -89,12 +77,12 @@ export const sendChatMessage = async (
   message: string
 ): Promise<ApiResponse> => {
   try {
-    console.log(`Sending message to session ${sessionId}:`, message);
     const response = await fetch(
-      `${API_BASE}/chat/sessions/${sessionId}/messages`,
+      `${apiBase}/${encodeURIComponent(sessionId)}/messages`,
       {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ message }),
       }
     );
@@ -106,7 +94,6 @@ export const sendChatMessage = async (
     }
 
     const data = await response.json();
-    console.log("Message sent successfully:", data);
     return data;
   } catch (error) {
     console.error("Error sending chat message:", error);
@@ -118,11 +105,10 @@ export const getChatHistory = async (
   sessionId: string
 ): Promise<ChatMessage[]> => {
   try {
-    console.log(`Fetching chat history for session ${sessionId}`);
     const response = await fetch(
-      `${API_BASE}/chat/sessions/${sessionId}/history`,
+      `${apiBase}/${encodeURIComponent(sessionId)}/history`,
       {
-        headers: getAuthHeaders(),
+        credentials: "same-origin",
       }
     );
 
@@ -135,8 +121,6 @@ export const getChatHistory = async (
     const data = (await response.json()) as Array<
       Omit<ChatMessage, "timestamp"> & { timestamp: string | Date }
     >;
-    console.log("Received chat history:", data);
-
     if (!Array.isArray(data)) {
       console.error("Invalid chat history format:", data);
       throw new Error("Invalid chat history format");
@@ -157,9 +141,8 @@ export const getChatHistory = async (
 
 export const getAllChatSessions = async (): Promise<ChatSession[]> => {
   try {
-    console.log("Fetching all chat sessions...");
-    const response = await fetch(`${API_BASE}/chat/sessions`, {
-      headers: getAuthHeaders(),
+    const response = await fetch(apiBase, {
+      credentials: "same-origin",
     });
 
     if (!response.ok) {
@@ -169,8 +152,6 @@ export const getAllChatSessions = async (): Promise<ChatSession[]> => {
     }
 
     const data = (await response.json()) as ChatSessionPayload[];
-    console.log("Received chat sessions:", data);
-
     return data.map((session) => {
       // Ensure dates are valid
       const createdAt = new Date(session.createdAt || Date.now());

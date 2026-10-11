@@ -35,12 +35,7 @@ import { cn } from "@/lib/utils";
 
 import { MoodForm } from "@/components/mood/mood-form";
 import { AnxietyGames } from "@/components/games/anxiety-games";
-
-import {
-  getUserActivities,
-  saveMoodData,
-  logActivity,
-} from "@/lib/static-dashboard-data";
+import { logActivity } from "@/lib/api/activity";
 
 import {
   Dialog,
@@ -51,30 +46,14 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  addDays,
   format,
   subDays,
-  startOfDay,
-  isWithinInterval,
 } from "date-fns";
 
 import { ActivityLogger } from "@/components/activities/activity-logger";
 import { useSession } from "@/lib/contexts/session-context";
 import { getAllChatSessions } from "@/lib/api/chat";
-
-// Add this type definition
-type ActivityLevel = "none" | "low" | "medium" | "high";
-
-interface DayActivity {
-  date: Date;
-  level: ActivityLevel;
-  activities: {
-    type: string;
-    name: string;
-    completed: boolean;
-    time?: string;
-  }[];
-}
+import { getMoodHistory } from "@/lib/api/mood";
 
 // Add this interface near the top with other interfaces
 interface Activity {
@@ -107,40 +86,6 @@ interface Insight {
   icon: LucideIcon;
   priority: "low" | "medium" | "high";
 }
-
-// Update the calculateDailyStats function to show correct stats
-const calculateDailyStats = (activities: Activity[]): DailyStats => {
-  const today = startOfDay(new Date());
-  const todaysActivities = activities.filter((activity) =>
-    isWithinInterval(new Date(activity.timestamp), {
-      start: today,
-      end: addDays(today, 1),
-    })
-  );
-
-  // Calculate mood score (average of today's mood entries)
-  const moodEntries = todaysActivities.filter(
-    (a) => a.type === "mood" && a.moodScore !== null
-  );
-  const averageMood =
-    moodEntries.length > 0
-      ? Math.round(
-          moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
-            moodEntries.length
-        )
-      : null;
-
-  // Count therapy sessions (all sessions ever)
-  const therapySessions = activities.filter((a) => a.type === "therapy").length;
-
-  return {
-    moodScore: averageMood,
-    completionRate: 100, // Always 100% as requested
-    mindfulnessCount: therapySessions, // Total number of therapy sessions
-    totalActivities: todaysActivities.length,
-    lastUpdated: new Date(),
-  };
-};
 
 // Rename the function
 const generateInsights = (activities: Activity[]) => {
@@ -279,10 +224,7 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showCheckInChat, setShowCheckInChat] = useState(false);
-  const [activityHistory, setActivityHistory] = useState<DayActivity[]>([]);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
-  const [isSavingActivity, setIsSavingActivity] = useState(false);
-  const [isSavingMood, setIsSavingMood] = useState(false);
   const [dailyStats, setDailyStats] = useState<DailyStats>({
     moodScore: null,
     completionRate: 100,
@@ -291,52 +233,66 @@ export default function Dashboard() {
     lastUpdated: new Date(),
   });
 
-  // Add this function to transform activities into day activity format
-  const transformActivitiesToDayActivity = (
-    activities: Activity[]
-  ): DayActivity[] => {
-    const days: DayActivity[] = [];
-    const today = new Date();
-
-    // Create array for last 28 days
-    for (let i = 27; i >= 0; i--) {
-      const date = startOfDay(subDays(today, i));
-      const dayActivities = activities.filter((activity) =>
-        isWithinInterval(new Date(activity.timestamp), {
-          start: date,
-          end: addDays(date, 1),
-        })
-      );
-
-      // Determine activity level based on number of activities
-      let level: ActivityLevel = "none";
-      if (dayActivities.length > 0) {
-        if (dayActivities.length <= 2) level = "low";
-        else if (dayActivities.length <= 4) level = "medium";
-        else level = "high";
-      }
-
-      days.push({
-        date,
-        level,
-        activities: dayActivities.map((activity) => ({
-          type: activity.type,
-          name: activity.name,
-          completed: activity.completed,
-          time: format(new Date(activity.timestamp), "h:mm a"),
-        })),
-      });
-    }
-
-    return days;
-  };
-
-  // Modify the loadActivities function to use a default user ID
   const loadActivities = useCallback(async () => {
     try {
-      const userActivities = await getUserActivities("default-user");
-      setActivities(userActivities);
-      setActivityHistory(transformActivitiesToDayActivity(userActivities));
+      const [activityResponse, moodResult] = await Promise.all([
+        fetch("/api/activity?limit=500", { credentials: "same-origin" }),
+        getMoodHistory({ limit: 500 }),
+      ]);
+      if (!activityResponse.ok) throw new Error("Failed to fetch activities");
+
+      const activityResult = await activityResponse.json();
+      const activityRecords = activityResult.data as Array<{
+        _id: string;
+        userId: string;
+        type: string;
+        name: string;
+        description?: string;
+        timestamp: string;
+        duration?: number;
+        createdAt: string;
+        updatedAt: string;
+      }>;
+      const savedActivities: Activity[] = activityRecords.map((activity) => ({
+        id: activity._id,
+        userId: activity.userId,
+        type: activity.type,
+        name: activity.name,
+        description: activity.description ?? null,
+        timestamp: new Date(activity.timestamp),
+        duration: activity.duration ?? null,
+        completed: true,
+        moodScore: null,
+        moodNote: null,
+        createdAt: new Date(activity.createdAt),
+        updatedAt: new Date(activity.updatedAt),
+      }));
+      const savedMoods: Activity[] = (moodResult.data as Array<{
+        _id: string;
+        userId: string;
+        score: number;
+        note?: string;
+        timestamp: string;
+        createdAt: string;
+        updatedAt: string;
+      }>).map((mood) => ({
+        id: mood._id,
+        userId: mood.userId,
+        type: "mood",
+        name: "Mood check-in",
+        description: mood.note ?? null,
+        timestamp: new Date(mood.timestamp),
+        duration: null,
+        completed: true,
+        moodScore: mood.score,
+        moodNote: mood.note ?? null,
+        createdAt: new Date(mood.createdAt),
+        updatedAt: new Date(mood.updatedAt),
+      }));
+      const records = [...savedActivities, ...savedMoods].sort(
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+      );
+      setActivities(records);
     } catch (error) {
       console.error("Error loading activities:", error);
     }
@@ -348,13 +304,6 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  // Add this effect to update stats when activities change
-  useEffect(() => {
-    if (activities.length > 0) {
-      setDailyStats(calculateDailyStats(activities));
-    }
-  }, [activities]);
-
   // Update the effect
   useEffect(() => {
     if (activities.length > 0) {
@@ -365,27 +314,22 @@ export default function Dashboard() {
   // Add function to fetch daily stats
   const fetchDailyStats = useCallback(async () => {
     try {
-      // Fetch therapy sessions using the chat API
-      const sessions = await getAllChatSessions();
-
-      // Fetch today's activities
-      const activitiesResponse = await fetch("/api/activities/today");
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+      const [sessions, activitiesResponse, moodResult] = await Promise.all([
+        getAllChatSessions(),
+        fetch("/api/activity?today=true", { credentials: "same-origin" }),
+        getMoodHistory({ startDate: today.toISOString(), endDate: tomorrow.toISOString() }),
+      ]);
       if (!activitiesResponse.ok) throw new Error("Failed to fetch activities");
-      const activities = await activitiesResponse.json();
-
-      // Calculate mood score from activities
-      const moodEntries = activities.filter(
-        (a: Activity) => a.type === "mood" && a.moodScore !== null
-      );
-      const averageMood =
-        moodEntries.length > 0
-          ? Math.round(
-              moodEntries.reduce(
-                (acc: number, curr: Activity) => acc + (curr.moodScore || 0),
-                0
-              ) / moodEntries.length
-            )
-          : null;
+      const activityResult = await activitiesResponse.json();
+      const activities = activityResult.data as Activity[];
+      const moodEntries = moodResult.data as Array<{ score: number }>;
+      const averageMood = moodEntries.length
+        ? Math.round(moodEntries.reduce((sum, entry) => sum + entry.score, 0) / moodEntries.length)
+        : null;
 
       setDailyStats({
         moodScore: averageMood,
@@ -452,22 +396,6 @@ export default function Dashboard() {
     router.push("/therapy/new");
   };
 
-  const handleMoodSubmit = async (data: { moodScore: number }) => {
-    setIsSavingMood(true);
-    try {
-      await saveMoodData({
-        userId: "default-user",
-        mood: data.moodScore,
-        note: "",
-      });
-      setShowMoodModal(false);
-    } catch (error) {
-      console.error("Error saving mood:", error);
-    } finally {
-      setIsSavingMood(false);
-    }
-  };
-
   const handleAICheckIn = () => {
     setShowActivityLogger(true);
   };
@@ -477,7 +405,6 @@ export default function Dashboard() {
     async (gameName: string, description: string) => {
       try {
         await logActivity({
-          userId: "default-user",
           type: "game",
           name: gameName,
           description: description,
@@ -486,11 +413,12 @@ export default function Dashboard() {
 
         // Refresh activities after logging
         loadActivities();
+        fetchDailyStats();
       } catch (error) {
         console.error("Error logging game activity:", error);
       }
     },
-    [loadActivities]
+    [fetchDailyStats, loadActivities]
   );
 
   // Simple loading state
@@ -742,7 +670,13 @@ export default function Dashboard() {
               Move the slider to track your current mood
             </DialogDescription>
           </DialogHeader>
-          <MoodForm onSuccess={() => setShowMoodModal(false)} />
+          <MoodForm
+            onSuccess={() => {
+              setShowMoodModal(false);
+              loadActivities();
+              fetchDailyStats();
+            }}
+          />
         </DialogContent>
       </Dialog>
 
@@ -770,7 +704,10 @@ export default function Dashboard() {
       <ActivityLogger
         open={showActivityLogger}
         onOpenChange={setShowActivityLogger}
-        onActivityLogged={loadActivities}
+        onActivityLogged={() => {
+          loadActivities();
+          fetchDailyStats();
+        }}
       />
     </div>
   );

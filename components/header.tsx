@@ -17,10 +17,9 @@ import { SignInButton } from "@/components/auth/sign-in-button";
 import { useSession } from "@/lib/contexts/session-context";
 
 export function Header() {
-  const { isAuthenticated, logout, user } = useSession();
+  const { isAuthenticated, logout } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  console.log("Header: Auth state:", { isAuthenticated, user });
   const navItems = [
     { href: "/features", label: "Features" },
     { href: "/about", label: "About SerenAI" },

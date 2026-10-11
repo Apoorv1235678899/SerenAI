@@ -8,15 +8,10 @@ interface ActivityEntry {
 export async function logActivity(
   data: ActivityEntry
 ): Promise<{ success: boolean; data: unknown }> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Not authenticated");
-
   const response = await fetch("/api/activity", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
     body: JSON.stringify(data),
   });
 

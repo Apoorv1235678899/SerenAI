@@ -24,10 +24,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const response = await loginUser(email, password);
-
-      // Store the token in localStorage
-      localStorage.setItem("token", response.token);
+      await loginUser(email, password);
 
       // Update session state
       await checkSession();

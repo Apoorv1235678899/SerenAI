@@ -1,70 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_API_URL =
-  process.env.BACKEND_API_URL ||
-  "http://localhost:3001";
+import { getAuthenticatedUser } from "@/lib/auth";
+import { connectDB } from "@/lib/db";
+import { ChatSession } from "@/models/ChatSession";
 
 export async function GET(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const { sessionId } = await params;
-    const response = await fetch(
-      `${BACKEND_API_URL}/chat/sessions/${sessionId}/history`
-    );
+    const user = await getAuthenticatedUser(request);
+    if (!user) return NextResponse.json({ message: "Authentication required" }, { status: 401 });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
+    await connectDB();
+    const session = await ChatSession.findOne({ sessionId, userId: user._id }).lean();
+    if (!session) return NextResponse.json({ error: "Chat session not found" }, { status: 404 });
+    return NextResponse.json(session);
   } catch (error) {
-    console.error("Error in chat history API:", error);
+    console.error("Error fetching chat session:", error);
     return NextResponse.json(
-      { error: "Failed to fetch chat history" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ sessionId: string }> }
-) {
-  try {
-    const { sessionId } = await params;
-    const { message } = await req.json();
-
-    if (!message) {
-      return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 }
-      );
-    }
-
-    const response = await fetch(
-      `${BACKEND_API_URL}/chat/sessions/${sessionId}/messages`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error in chat API:", error);
-    return NextResponse.json(
-      { error: "Failed to process chat message" },
+      { error: "Failed to fetch chat session" },
       { status: 500 }
     );
   }

@@ -19,15 +19,10 @@ interface MoodStats {
 export async function trackMood(
   data: MoodEntry
 ): Promise<{ success: boolean; data: unknown }> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Not authenticated");
-
   const response = await fetch("/api/mood", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
     body: JSON.stringify(data),
   });
 
@@ -44,18 +39,13 @@ export async function getMoodHistory(params?: {
   endDate?: string;
   limit?: number;
 }): Promise<{ success: boolean; data: unknown[] }> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Not authenticated");
-
   const queryParams = new URLSearchParams();
   if (params?.startDate) queryParams.append("startDate", params.startDate);
   if (params?.endDate) queryParams.append("endDate", params.endDate);
   if (params?.limit) queryParams.append("limit", params.limit.toString());
 
-  const response = await fetch(`/api/mood/history?${queryParams.toString()}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const response = await fetch(`/api/mood?${queryParams.toString()}`, {
+    credentials: "same-origin",
   });
 
   if (!response.ok) {
@@ -72,13 +62,8 @@ export async function getMoodStats(
   success: boolean;
   data: MoodStats;
 }> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Not authenticated");
-
   const response = await fetch(`/api/mood/stats?period=${period}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "same-origin",
   });
 
   if (!response.ok) {

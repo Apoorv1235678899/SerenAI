@@ -220,7 +220,6 @@ export default function TherapyPage() {
     e.preventDefault();
     console.log("Form submitted");
     const currentMessage = message.trim();
-    console.log("Current message:", currentMessage);
     console.log("Session ID:", sessionId);
     console.log("Is typing:", isTyping);
     console.log("Is chat paused:", isChatPaused);
@@ -258,12 +257,9 @@ export default function TherapyPage() {
       console.log("Sending message to API...");
       // Send message to API
       const response = await sendChatMessage(sessionId, currentMessage);
-      console.log("Raw API response:", response);
-
       // Parse the response if it's a string
       const aiResponse =
         typeof response === "string" ? JSON.parse(response) : response;
-      console.log("Parsed AI response:", aiResponse);
 
       // Add AI response with metadata
       const assistantMessage: ChatMessage = {
@@ -289,8 +285,6 @@ export default function TherapyPage() {
           },
         },
       };
-
-      console.log("Created assistant message:", assistantMessage);
 
       // Add the message immediately
       setMessages((prev) => [...prev, assistantMessage]);
