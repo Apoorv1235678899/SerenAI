@@ -17,8 +17,7 @@ function getTextFromResponse(result: GenerateContentResponse): string {
 
 // ✅ Function: Process chat message
 export const processChatMessage = inngest.createFunction(
-  { id: "process-chat-message" },
-  { event: "therapy/session.message" },
+  { id: "process-chat-message", triggers: { event: "therapy/session.message" } },
   async ({ event, step }) => {
     try {
       const {
@@ -166,8 +165,7 @@ export const processChatMessage = inngest.createFunction(
 
 // ✅ Analyze therapy session
 export const analyzeTherapySession = inngest.createFunction(
-  { id: "analyze-therapy-session" },
-  { event: "therapy/session.created" },
+  { id: "analyze-therapy-session", triggers: { event: "therapy/session.created" } },
   async ({ event, step }) => {
     try {
       const sessionContent = await step.run("get-session-content", async () => {
@@ -227,8 +225,7 @@ export const analyzeTherapySession = inngest.createFunction(
 
 // ✅ Generate activity recommendations
 export const generateActivityRecommendations = inngest.createFunction(
-  { id: "generate-activity-recommendations" },
-  { event: "mood/updated" },
+  { id: "generate-activity-recommendations", triggers: { event: "mood/updated" } },
   async ({ event, step }) => {
     try {
       const userContext = await step.run("get-user-context", async () => {

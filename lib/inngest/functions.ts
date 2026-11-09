@@ -3,8 +3,7 @@ import { functions as aiFunctions } from "./aiFunctions";
 
 // Function to handle therapy session events
 export const therapySessionHandler = inngest.createFunction(
-  { id: "therapy-session-handler" },
-  { event: "therapy/session.created" },
+  { id: "therapy-session-handler", triggers: { event: "therapy/session.created" } },
   async ({ event, step }) => {
     // Log the session creation
     await step.run("log-session-creation", async () => {
@@ -38,8 +37,7 @@ export const therapySessionHandler = inngest.createFunction(
 
 // Function to handle mood tracking events
 export const moodTrackingHandler = inngest.createFunction(
-  { id: "mood-tracking-handler" },
-  { event: "mood/updated" },
+  { id: "mood-tracking-handler", triggers: { event: "mood/updated" } },
   async ({ event, step }) => {
     // Log the mood update
     await step.run("log-mood-update", async () => {
@@ -73,8 +71,7 @@ export const moodTrackingHandler = inngest.createFunction(
 
 // Function to handle activity completion events
 export const activityCompletionHandler = inngest.createFunction(
-  { id: "activity-completion-handler" },
-  { event: "activity/completed" },
+  { id: "activity-completion-handler", triggers: { event: "activity/completed" } },
   async ({ step }) => {
     // Log the activity completion
     await step.run("log-activity-completion", async () => {
