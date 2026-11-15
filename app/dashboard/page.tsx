@@ -74,8 +74,7 @@ interface Activity {
 // Add this interface for stats
 interface DailyStats {
   moodScore: number | null;
-  completionRate: number;
-  mindfulnessCount: number;
+  sessionCount: number;
   totalActivities: number;
   lastUpdated: Date;
 }
@@ -227,8 +226,7 @@ export default function Dashboard() {
   const [showActivityLogger, setShowActivityLogger] = useState(false);
   const [dailyStats, setDailyStats] = useState<DailyStats>({
     moodScore: null,
-    completionRate: 100,
-    mindfulnessCount: 0,
+    sessionCount: 0,
     totalActivities: 0,
     lastUpdated: new Date(),
   });
@@ -318,7 +316,7 @@ export default function Dashboard() {
       today.setUTCHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
       tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-      const [sessions, activitiesResponse, moodResult] = await Promise.all([
+      const [chatSessions, activitiesResponse, moodResult] = await Promise.all([
         getAllChatSessions(),
         fetch("/api/activity?today=true", { credentials: "same-origin" }),
         getMoodHistory({ startDate: today.toISOString(), endDate: tomorrow.toISOString() }),
@@ -333,8 +331,7 @@ export default function Dashboard() {
 
       setDailyStats({
         moodScore: averageMood,
-        completionRate: 100,
-        mindfulnessCount: sessions.length, // Total number of therapy sessions
+        sessionCount: chatSessions.length,
         totalActivities: activities.length,
         lastUpdated: new Date(),
       });
@@ -354,27 +351,22 @@ export default function Dashboard() {
   const wellnessStats = [
     {
       title: "Mood Score",
-      value: dailyStats.moodScore ? `${dailyStats.moodScore}%` : "No data",
+      value:
+        dailyStats.moodScore !== null
+          ? `${dailyStats.moodScore}%`
+          : "No data",
       icon: Brain,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
       description: "Today's average mood",
     },
     {
-      title: "Completion Rate",
-      value: "100%",
-      icon: Trophy,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10",
-      description: "Perfect completion rate",
-    },
-    {
-      title: "Therapy Sessions",
-      value: `${dailyStats.mindfulnessCount} sessions`,
+      title: "Chat Sessions",
+      value: `${dailyStats.sessionCount} sessions`,
       icon: Heart,
       color: "text-rose-500",
       bgColor: "bg-rose-500/10",
-      description: "Total sessions completed",
+      description: "Saved conversations",
     },
     {
       title: "Total Activities",
@@ -382,7 +374,7 @@ export default function Dashboard() {
       icon: Activity,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
-      description: "Planned for today",
+      description: "Logged today",
     },
   ];
 
@@ -440,7 +432,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="space-y-2"
           >
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Welcome back, {user?.name || "there"}
             </h1>
             <p className="text-muted-foreground">
@@ -495,7 +487,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-left">
                           <div className="font-semibold text-white">
-                            Start Therapy
+                            Start a conversation
                           </div>
                           <div className="text-xs text-white/80">
                             Begin a new session
@@ -541,9 +533,9 @@ export default function Dashboard() {
                           <BrainCircuit className="w-5 h-5 text-blue-500" />
                         </div>
                         <div>
-                          <div className="font-medium text-sm">Check-in</div>
+                          <div className="font-medium text-sm">Log activity</div>
                           <div className="text-xs text-muted-foreground mt-0.5">
-                            Quick wellness check
+                            Record a wellness activity
                           </div>
                         </div>
                       </Button>
@@ -575,7 +567,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {wellnessStats.map((stat) => (
                     <div
                       key={stat.title}
@@ -609,7 +601,7 @@ export default function Dashboard() {
                   Insights
                 </CardTitle>
                 <CardDescription>
-                  Personalized recommendations based on your activity patterns
+                  Simple patterns from recent check-ins and activities
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -640,8 +632,8 @@ export default function Dashboard() {
                     <div className="text-center text-muted-foreground py-8">
                       <Activity className="w-8 h-8 mx-auto mb-3 opacity-50" />
                       <p>
-                        Complete more activities to receive personalized
-                        insights
+                        Log a few activities or check-ins to see simple patterns
+                        here
                       </p>
                     </div>
                   )}

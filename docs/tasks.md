@@ -85,9 +85,9 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 
 **Bugs / correctness**
 
-- [ ] Replace fixed 100% completion rate with a defined persisted metric or remove it. **Priority: High. Status: Open; value is hardcoded. Dependencies: metric definition.**
-- [ ] Count completed sessions accurately instead of counting every chat session as a completed therapy session. **Priority: High. Status: Open. Dependencies: session lifecycle.**
-- [ ] Handle a valid mood score of 0 as data, not "No data." **Priority: Medium. Status: Open; truthiness check suppresses zero. Dependencies: none.**
+- [x] Remove the fixed 100% completion rate from the dashboard until a defined persisted metric exists. **Priority: High. Status: Complete; the fabricated tile was removed. Dependencies: metric definition for any future replacement.**
+- [x] Label the session count as chat sessions rather than completed therapy sessions. **Priority: High. Status: Complete; the dashboard now describes the displayed count as saved conversations. Session completion lifecycle remains open.**
+- [x] Handle a valid mood score of 0 as data, not "No data." **Priority: Medium. Status: Complete; the dashboard now checks for `null` explicitly.**
 - [ ] Implement or remove the empty AI check-in drawer and ensure dashboard data failures are visible. **Priority: Medium. Status: Open. Dependencies: check-in scope.**
 
 **New features**
@@ -98,9 +98,9 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 
 **Bugs / incomplete navigation**
 
-- [ ] Resolve or remove dead `/features`, `/about`, and `/forgot-password` links. **Priority: Medium. Status: Open; no corresponding routes in build output. Dependencies: page scope approval.**
+- [x] Resolve or remove dead `/features`, `/about`, and `/forgot-password` links. **Priority: Medium. Status: Complete; About and Features routes are implemented, the unsupported recovery link was removed, and the production build includes both routes.**
 - [ ] Review responsive, keyboard, screen-reader, loading, empty, and error states across auth, chat, mood, and activity flows. **Priority: Medium. Status: Open; no accessibility/E2E evidence. Dependencies: test setup.**
-- [ ] Remove or qualify unsupported privacy, encryption, clinical/evidence-based, and always-available claims. **Priority: Critical. Status: Open. Dependencies: privacy and product review.**
+- [x] Remove or qualify unsupported privacy, encryption, clinical/evidence-based, and always-available claims. **Priority: Critical. Status: Complete for the inspected frontend copy; About now discloses Gemini/MongoDB handling and states the AI limitations. A broader privacy and product review remains open.**
 
 **New features**
 
@@ -110,7 +110,7 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 
 **New features**
 
-- [ ] Decide whether these pages are MVP scope; if approved, write factual copy based only on shipped/verified capabilities. **Priority: Low. Status: Open; navigation links exist but pages do not. Dependencies: product approval and safety/privacy copy.**
+- [x] Add About and Features pages using factual copy based on shipped capabilities. **Priority: Low. Status: Complete; requested by product owner, source-backed copy added, and build verified.**
 
 ## 12. Testing and Deployment
 

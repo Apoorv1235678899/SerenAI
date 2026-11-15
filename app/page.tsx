@@ -5,20 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
   Brain,
-  Heart,
   Shield,
   MessageCircle,
   Sparkles,
   LineChart,
   Waves,
-  Check,
   ArrowRight,
-  HeartPulse,
-  Lightbulb,
-  Lock,
-  MessageSquareHeart,
 } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { useState, useEffect } from "react";
 import {
@@ -29,15 +23,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import React from "react";
-import { Ripple } from "@/components/ui/ripple";
 
 export default function Home() {
   const emotions = [
-    { value: 0, label: "😔 Down", color: "from-blue-500/50" },
-    { value: 25, label: "😊 Content", color: "from-green-500/50" },
-    { value: 50, label: "😌 Peaceful", color: "from-purple-500/50" },
-    { value: 75, label: "🤗 Happy", color: "from-yellow-500/50" },
-    { value: 100, label: "✨ Excited", color: "from-pink-500/50" },
+    { value: 0, label: "😔 Down" },
+    { value: 25, label: "😊 Content" },
+    { value: 50, label: "😌 Peaceful" },
+    { value: 75, label: "🤗 Happy" },
+    { value: 100, label: "✨ Excited" },
   ];
 
   const [emotion, setEmotion] = useState(50);
@@ -47,21 +40,21 @@ export default function Home() {
 
   const welcomeSteps = [
     {
-      title: "Hi, I'm SerenAI 👋",
+      title: "Welcome to SerenAI",
       description:
-        "Your AI companion for emotional well-being. I'm here to provide a safe, judgment-free space for you to express yourself.",
+        "SerenAI offers AI-generated conversation for everyday reflection. It is not a therapist, clinician, or emergency service.",
       icon: Waves,
     },
     {
-      title: "Personalized Support 🌱",
+      title: "Check in, your way",
       description:
-        "I adapt to your needs and emotional state, offering evidence-based techniques and gentle guidance when you need it most.",
+        "Record a mood, revisit conversations, or explore guided breathing, garden, forest, and ocean-wave experiences.",
       icon: Brain,
     },
     {
-      title: "Your Privacy Matters 🛡️",
+      title: "Before you share",
       description:
-        "Our conversations are completely private and secure. I follow strict ethical guidelines and respect your boundaries.",
+        "Messages and recent chat history are sent to Google Gemini to generate replies, and sessions are stored in MongoDB. Share only what you are comfortable sending.",
       icon: Shield,
     },
   ];
@@ -70,36 +63,33 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  const currentEmotion =
-    emotions.find((em) => Math.abs(emotion - em.value) < 15) || emotions[2];
-
   const features = [
     {
-      icon: HeartPulse,
-      title: "24/7 Support",
-      description: "Always here to listen and support you, any time of day",
-      color: "from-rose-500/20",
+      icon: MessageCircle,
+      title: "Supportive conversations",
+      description: "A place to put thoughts into words and receive an AI-generated reply",
+      color: "from-blue-500/20",
       delay: 0.2,
     },
     {
-      icon: Lightbulb,
-      title: "Smart Insights",
-      description: "Personalized guidance powered by emotional intelligence",
-      color: "from-amber-500/20",
+      icon: LineChart,
+      title: "Mood check-ins",
+      description: "Record a mood score and review saved check-ins and summaries",
+      color: "from-cyan-500/20",
       delay: 0.4,
     },
     {
-      icon: Lock,
-      title: "Private & Secure",
-      description: "Your conversations are always confidential and encrypted",
-      color: "from-emerald-500/20",
+      icon: Brain,
+      title: "Conversation history",
+      description: "Return to saved sessions and review messages from each conversation",
+      color: "from-violet-500/20",
       delay: 0.6,
     },
     {
-      icon: MessageSquareHeart,
-      title: "Evidence-Based",
-      description: "Therapeutic techniques backed by clinical research",
-      color: "from-blue-500/20",
+      icon: Waves,
+      title: "Guided relaxation",
+      description: "Explore breathing, Zen Garden, Mindful Forest, and Ocean Waves",
+      color: "from-teal-500/20",
       delay: 0.8,
     },
   ];
@@ -107,47 +97,36 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] mt-20 flex flex-col items-center justify-center py-12 px-4">
-        {/* Enhanced background elements */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div
-            className={`absolute w-[500px] h-[500px] rounded-full blur-3xl top-0 -left-20 transition-all duration-700 ease-in-out
-            bg-gradient-to-r ${currentEmotion.color} to-transparent opacity-60`}
-          />
-          <div className="absolute w-[400px] h-[400px] rounded-full bg-secondary/10 blur-3xl bottom-0 right-0 animate-pulse delay-700" />
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-3xl" />
-        </div>
-        <Ripple className="opacity-60" />
-
+      <section className="relative mt-16 flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center overflow-hidden px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="relative space-y-8 text-center"
+          className="relative z-10 space-y-8 text-center"
         >
           {/* Enhanced badge with subtle animation */}
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm border border-primary/20 bg-primary/5 backdrop-blur-sm hover:border-primary/40 transition-all duration-300">
-            <Waves className="w-4 h-4 animate-wave text-primary" />
-            <span className="relative text-foreground/90 dark:text-foreground after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-primary/30 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
-              Your AI Agent Mental Health Companion
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-sm text-muted-foreground">
+            <Waves className="h-4 w-4 text-primary" aria-hidden="true" />
+            <span>
+              A space for everyday reflection
             </span>
           </div>
 
           {/* Enhanced main heading with smoother gradient */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-plus-jakarta tracking-tight">
-            <span className="inline-block bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent [text-shadow:_0_1px_0_rgb(0_0_0_/_20%)] hover:to-primary transition-all duration-300">
-              Find Peace
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
+            <span className="text-primary">
+              SerenAI,
             </span>
             <br />
-            <span className="inline-block mt-2 bg-gradient-to-b from-foreground to-foreground/90 bg-clip-text text-transparent">
-              of Mind
+            <span className="mt-2 inline-block text-foreground">
+              for a mindful moment.
             </span>
           </h1>
 
           {/* Enhanced description with better readability */}
-          <p className="max-w-[600px] mx-auto text-base md:text-lg text-muted-foreground leading-relaxed tracking-wide">
-            Experience a new way of emotional support. Our AI companion is here
-            to listen, understand, and guide you through life&apos;s journey.
+          <p className="mx-auto max-w-[600px] text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Make room to notice how you&apos;re feeling, explore what&apos;s on your mind,
+            or try a guided reset.
           </p>
 
           {/* Emotion slider section with enhanced transitions */}
@@ -158,27 +137,29 @@ export default function Home() {
             transition={{ delay: 0.3, duration: 0.8 }}
           >
             <div className="space-y-2 text-center">
-              <p className="text-sm text-muted-foreground/80 font-medium">
-                Whatever you&apos;re feeling, we&apos;re here to listen
+              <p className="text-sm font-medium text-muted-foreground">
+                Start with a quick mood check-in
               </p>
               <div className="flex justify-between items-center px-2">
                 {emotions.map((em) => (
-                  <div
+                  <button
                     key={em.value}
-                    className={`transition-all duration-500 ease-out cursor-pointer hover:scale-105 ${
+                    type="button"
+                    aria-pressed={Math.abs(emotion - em.value) < 15}
+                    className={`transition-all duration-300 ${
                       Math.abs(emotion - em.value) < 15
                         ? "opacity-100 scale-110 transform-gpu"
                         : "opacity-50 scale-100"
                     }`}
                     onClick={() => setEmotion(em.value)}
                   >
-                    <div className="text-2xl transform-gpu">
+                    <span className="block text-2xl">
                       {em.label.split(" ")[0]}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1 font-medium">
+                    </span>
+                    <span className="mt-1 block text-xs font-medium text-muted-foreground">
                       {em.label.split(" ")[1]}
-                    </div>
-                  </div>
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -186,9 +167,10 @@ export default function Home() {
             {/* Enhanced slider with dynamic gradient */}
             <div className="relative px-2">
               <div
-                className={`absolute inset-0 bg-gradient-to-r ${currentEmotion.color} to-transparent blur-2xl -z-10 transition-all duration-500`}
+                className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/25 via-blue-500/10 to-transparent blur-2xl"
               />
               <Slider
+                aria-label="Mood check-in score"
                 value={[emotion]}
                 onValueChange={(value) => setEmotion(value[0])}
                 min={0}
@@ -199,15 +181,15 @@ export default function Home() {
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-muted-foreground animate-pulse">
-                Slide to express how you&apos;re feeling today
+              <p className="text-sm text-muted-foreground">
+                Move the slider to explore the mood scale
               </p>
             </div>
           </motion.div>
 
           {/* Enhanced CTA button and welcome dialog */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col items-center justify-center gap-3 sm:flex-row"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
             transition={{ delay: 0.2, duration: 0.8 }}
@@ -215,13 +197,15 @@ export default function Home() {
             <Button
               size="lg"
               onClick={() => setShowDialog(true)}
-              className="relative group h-12 px-8 rounded-full bg-gradient-to-r from-primary via-primary/90 to-secondary hover:to-primary shadow-lg shadow-primary/20 transition-all duration-500 hover:shadow-xl hover:shadow-primary/30"
+              className="h-12 px-7 shadow-lg shadow-primary/15 transition-transform hover:-translate-y-0.5"
             >
-              <span className="relative z-10 font-medium flex items-center gap-2">
-                Begin Your Journey
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              <span className="flex items-center gap-2 font-medium">
+                Take a look around
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </span>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-size-200 bg-pos-0 group-hover:bg-pos-100" />
+            </Button>
+            <Button asChild size="lg" variant="ghost" className="h-12 px-6">
+              <Link href="/features">Explore features</Link>
             </Button>
           </motion.div>
         </motion.div>
@@ -245,12 +229,11 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto">
           <motion.div className="text-center mb-16 space-y-4 text-white ">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent dark:text-primary/90">
-              How SerenAI Helps You
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              A few ways to begin
             </h2>
-            <p className="text-foreground dark:text-foreground/95 max-w-2xl mx-auto font-medium text-lg">
-              Experience a new kind of emotional support, powered by empathetic
-              AI
+            <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg">
+              Tools for reflection, tracking, and a quieter pause.
             </p>
           </motion.div>
 
@@ -263,7 +246,7 @@ export default function Home() {
                 transition={{ delay: feature.delay, duration: 0.5 }}
                 viewport={{ once: true }}
               >
-                <Card className="group relative overflow-hidden border border-primary/10 hover:border-primary/20 transition-all duration-300 h-[200px] bg-card/30 dark:bg-card/80 backdrop-blur-sm">
+                <Card className="group relative h-full min-h-[190px] overflow-hidden border-border/80 bg-card/65 shadow-none transition-colors duration-200 hover:border-primary/35 hover:bg-card">
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${feature.color} to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-500 dark:group-hover:opacity-30`}
                   />
