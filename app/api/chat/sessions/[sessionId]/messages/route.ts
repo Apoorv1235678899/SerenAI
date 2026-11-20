@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { inngest } from "@/lib/inngest/client";
 import { getAuthenticatedUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { generateChatReply } from "@/lib/chat-ai";
@@ -21,20 +20,6 @@ export async function POST(
     await connectDB();
     const session = await ChatSession.findOne({ sessionId, userId: user._id });
     if (!session) return NextResponse.json({ error: "Chat session not found" }, { status: 404 });
-
-    await inngest.send({
-      name: "therapy/session.message",
-      data: {
-        message,
-        history: session.messages,
-        memory: {
-          userProfile: { emotionalState: [], riskLevel: 0, preferences: {} },
-          sessionContext: { conversationThemes: [], currentTechnique: null },
-        },
-        goals: [],
-        systemPrompt: "You are an empathetic and supportive AI therapy assistant. Maintain professional boundaries and consider user safety.",
-      },
-    });
 
     const { analysis, response } = await generateChatReply(message, session.messages);
     session.messages.push(

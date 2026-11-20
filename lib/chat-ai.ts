@@ -13,7 +13,7 @@ export async function generateChatReply(
 
   const ai = new GoogleGenAI({ apiKey });
   const analysisResult = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-3.8-flash",
     contents: [
       {
         role: "user",
@@ -31,7 +31,7 @@ export async function generateChatReply(
     .trim();
   const analysis = JSON.parse(analysisText);
   const responseResult = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-3.8-flash",
     contents: [
       {
         role: "user",

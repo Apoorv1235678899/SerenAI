@@ -21,7 +21,7 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 
 **Bugs / reliability**
 
-- [ ] Choose one chat response path; prevent the unused Inngest chat generation from duplicating Gemini calls. **Priority: High. Status: Open; synchronous and background paths both call Gemini. Dependencies: AI flow decision.**
+- [x] Choose one chat response path; prevent the unused Inngest chat generation from duplicating Gemini calls. **Priority: High. Status: Complete; chat now uses the synchronous Gemini path only, so Inngest configuration cannot block chat. The unused handler remains registered but has no producer.**
 - [ ] Make event delivery reliable and idempotent, including behavior when a record is saved but event send fails. **Priority: High. Status: Open; writes precede event sends. Dependencies: event-processing design.**
 - [ ] Implement persistence for job outputs or remove placeholder handlers and their unsupported claims. **Priority: Medium. Status: Open; handlers return fixed/log-only results. Dependencies: define product side effects.**
 - [ ] Add consistent request schemas, HTTP error contracts, bounded pagination/history, and API route tests. **Priority: High. Status: Open; validation and error behavior vary. Dependencies: API contracts.**
@@ -42,7 +42,7 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 - [ ] Validate Gemini analysis output against a typed schema and define safe fallback behavior for invalid/empty output. **Priority: Critical. Status: Open; unchecked JSON.parse result is used. Dependencies: AI response contract.**
 - [ ] Create qualified mental-health safety requirements, risk-response policy, crisis-resource review, and disclaimers; test representative safe/unsafe prompts. **Priority: Critical. Status: Open; no verified escalation path. Dependencies: clinical/legal review.**
 - [ ] Minimize and document conversation data sent to Gemini and Inngest; explicitly disclose third-party processing. **Priority: Critical. Status: Open; full message is sent and recent history included in direct Gemini request. Dependencies: privacy review.**
-- [ ] Add chat route tests for ownership, persistence, retries, provider failures, and event failures. **Priority: High. Status: Open; no tests found. Dependencies: test setup and AI path decision.**
+- [ ] Add chat route tests for ownership, persistence, retries, and provider failures. **Priority: High. Status: Open; no tests found. Dependencies: test setup and AI path decision.**
 
 **New features**
 

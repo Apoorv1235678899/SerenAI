@@ -61,7 +61,7 @@ export const processChatMessage = inngest.createFunction(
             }`;
 
           const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-3.8-flash",
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           });
 
@@ -127,7 +127,7 @@ export const processChatMessage = inngest.createFunction(
           `;
 
           const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-3.8-flash",
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           });
 
@@ -173,7 +173,7 @@ export const analyzeTherapySession = inngest.createFunction(
       });
 
       const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-3.8-flash",
         contents: [
           {
             role: "user",
@@ -237,7 +237,7 @@ export const generateActivityRecommendations = inngest.createFunction(
       });
 
       const result: GenerateContentResponse = await getGeminiClient().models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-3.8-flash",
         contents: [
           {
             role: "user",

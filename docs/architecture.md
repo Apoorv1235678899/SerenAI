@@ -16,7 +16,7 @@ There is no `backend/` directory or `backend/package.json` in the workspace. `lo
 | UI | React 19, TypeScript, Tailwind CSS 4, local components using Radix UI, lucide-react, Framer Motion |
 | Database / ODM | MongoDB via Mongoose 8.19.1 |
 | Authentication | bcryptjs password hashes, jsonwebtoken JWTs, HTTP-only `serenai_session` cookie, MongoDB `Session` records |
-| Generative AI | `@google/genai`, model `gemini-2.0-flash` |
+| Generative AI | `@google/genai`, model `gemini-3.8-flash` |
 | Background jobs | Inngest 4.26.2; route at `/api/inngest` |
 | Markdown / dates | react-markdown, date-fns |
 | Test tooling | No test script or test/spec files found |
@@ -80,7 +80,7 @@ All endpoints are served by the Next.js application. User-data endpoints require
 | `GET /api/chat/sessions` | Lists that user's sessions, newest updated first |
 | `GET /api/chat/sessions/[sessionId]` | Fetches an owned session |
 | `GET /api/chat/sessions/[sessionId]/history` | Returns messages for an owned session |
-| `POST /api/chat/sessions/[sessionId]/messages` | Validates nonempty message, sends Inngest event, calls Gemini synchronously, appends user and assistant messages, persists and returns response/analysis |
+| `POST /api/chat/sessions/[sessionId]/messages` | Validates nonempty message, calls Gemini synchronously, appends user and assistant messages, persists and returns response/analysis |
 | `POST /api/mood` | Creates a 0-100 mood record and sends `mood/updated` event |
 | `GET /api/mood` | Returns owned user's history, optionally date-filtered and limited to 500 |
 | `GET /api/mood/stats` | Computes average/count/highest/lowest for week, month, or year (unrecognized periods fall back to week) |
@@ -112,9 +112,9 @@ Client session context checks `/api/auth/me`; it is UI state, not route protecti
 
 ## AI Integration and Conversation Flow
 
-The browser calls the chat API through `lib/api/chat.ts`. The route checks ownership, emits `therapy/session.message`, then calls `generateChatReply()` directly. That helper makes two Gemini calls: one asks for analysis JSON, then one generates a reply using the message, analysis, and up to 12 prior messages. The route stores both messages and metadata in the MongoDB `ChatSession`.
+The browser calls the chat API through `lib/api/chat.ts`. The route checks ownership, then calls `generateChatReply()` directly. That helper makes two Gemini calls: one asks for analysis JSON, then one generates a reply using the message, analysis, and up to 12 prior messages. The route stores both messages and metadata in the MongoDB `ChatSession`.
 
-The Inngest `processChatMessage` function also listens to `therapy/session.message` and calls Gemini for its own analysis and response. Its result is not consumed by the route or persisted. In the current route, the Inngest event is sent before the synchronous Gemini calls, so an event-send failure prevents the direct reply path. The background function is therefore not the response-delivery path.
+The Inngest `processChatMessage` function listens to `therapy/session.message` and calls Gemini for its own analysis and response, but no event producer currently uses it; its result was not consumed or persisted. The synchronous route is the sole chat response path.
 
 `analyzeTherapySession` listens for `therapy/session.created`, but no producer for that event was found. It only returns/logs its analysis; the "store-analysis" step does not write to MongoDB. AI output is parsed as JSON without schema validation. A risk score is recorded from model output, but there is no verified crisis escalation, human support, or validated risk-handling workflow.
 
@@ -122,7 +122,7 @@ The Inngest `processChatMessage` function also listens to `therapy/session.messa
 
 `/api/inngest` registers functions in `lib/inngest/functions.ts` and `lib/inngest/aiFunctions.ts`.
 
-- `therapy/session.message`: emitted by the chat message route; AI function runs separate analysis and response but has no user-visible/persistent result.
+- `therapy/session.message`: AI function is registered, but no producer currently emits this event.
 - `therapy/session.created`: two handlers are registered (a placeholder session handler and AI analysis); no event producer was found.
 - `mood/updated`: emitted after mood creation; placeholder handler returns a fixed trend/recommendation, and AI recommendation function receives context fields not populated by the mood route. Results are not stored.
 - `activity/completed`: emitted after activity creation; placeholder handler returns fixed progress/achievement values. It does not update a progress record.

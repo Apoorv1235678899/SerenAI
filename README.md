@@ -6,7 +6,7 @@ SerenAI is a single Next.js App Router application. API route handlers run serve
 
 1. Install the root dependencies with `npm install`.
 2. Copy `.env.example` to `.env.local` if you do not already have a local environment file.
-3. Set `MONGODB_URI`, `JWT_SECRET`, and `GEMINI_API_KEY` in `.env.local`. Configure `INNGEST_EVENT_KEY` when using Inngest outside its local development mode.
+3. Set `MONGODB_URI`, `JWT_SECRET`, and `GEMINI_API_KEY` in `.env.local`. The chat response uses Gemini directly. For local mood/activity background events, run `npx inngest-cli@latest dev` in a separate terminal; configure `INNGEST_EVENT_KEY` when using Inngest outside local development.
 4. Start the app with `npm run dev` and open `http://localhost:3000`.
 
 Never expose these values through `NEXT_PUBLIC_*` variables or commit `.env.local`.
