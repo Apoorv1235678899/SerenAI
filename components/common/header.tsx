@@ -18,7 +18,7 @@ export function Header() {
   ];
 
   return (
-    <div className="fixed top-0 z-50 w-full border-border shadow-sm bg-background/85 backdrop-blur-xl">
+    <div className="fixed top-0 z-50 w-full border-b border-border bg-background/95 shadow-sm backdrop-blur-xl">
       <header className="mx-auto max-w-6xl px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
@@ -85,7 +85,7 @@ export function Header() {
           <nav
             id="mobile-navigation"
             aria-label="Mobile navigation"
-            className="border-t border-white/[0.07] py-3 md:hidden"
+            className="border-t border-border py-3 md:hidden"
           >
             {navItems.map((item) => (
               <Link

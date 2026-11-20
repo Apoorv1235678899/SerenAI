@@ -98,6 +98,7 @@ Roadmap based on the source audit dated 2026-11-12. Every item is open unless ex
 
 **Bugs / incomplete navigation**
 
+- [x] Make the shared header distinguishable from the page in the light theme. **Priority: Low. Status: Complete; use the theme border token and a subtle shadow.**
 - [x] Resolve or remove dead `/features`, `/about`, and `/forgot-password` links. **Priority: Medium. Status: Complete; About and Features routes are implemented, the unsupported recovery link was removed, and the production build includes both routes.**
 - [ ] Review responsive, keyboard, screen-reader, loading, empty, and error states across auth, chat, mood, and activity flows. **Priority: Medium. Status: Open; no accessibility/E2E evidence. Dependencies: test setup.**
 - [x] Remove or qualify unsupported privacy, encryption, clinical/evidence-based, and always-available claims. **Priority: Critical. Status: Complete for the inspected frontend copy; About now discloses Gemini/MongoDB handling and states the AI limitations. A broader privacy and product review remains open.**
